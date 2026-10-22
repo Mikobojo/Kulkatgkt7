@@ -11,6 +11,9 @@ public class BallController : MonoBehaviour
     public LayerMask groundLayer;
     public float groundCheckDistance = 0.2f;  // Small ray length from bottom of ball
 
+    [Header("Score")]
+    [SerializeField] private int points;
+
     private Rigidbody2D rb;
     private float moveInput;
 
@@ -33,7 +36,7 @@ public class BallController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Movement (works mid‑air too, but jump is disabled)
+        // Movement (works mid-air too, but jump is disabled)
         rb.AddForce(new Vector2(moveInput * moveSpeed, 0f), ForceMode2D.Force);
 
         // Limit horizontal speed
@@ -54,6 +57,17 @@ public class BallController : MonoBehaviour
         Debug.DrawRay(rayOrigin, Vector2.down * groundCheckDistance, Color.red);
 
         return hit.collider != null;
+    }
+
+    public void AddPoints(int amount)
+    {
+        points += amount;
+        Debug.Log("Punkty: " + points);
+    }
+
+    public int GetPoints()
+    {
+        return points;
     }
 
     private void OnDrawGizmosSelected()
