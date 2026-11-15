@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class movementscript : MonoBehaviour
+public class MovementScript : MonoBehaviour
 {
     [Header("Movement")]
     public float torqueForce = 30f;
