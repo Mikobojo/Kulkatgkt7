@@ -9,6 +9,7 @@ using UnityEngine;
 public class DeathMenu : MonoBehaviour
 {
     [SerializeField] private GameObject panel;
+    [SerializeField] private GameObject hudRoot;
     [SerializeField] private TMP_Text reasonText;
     [SerializeField] private TMP_Text scoreText;
     [SerializeField] private PlayerDeath player;
@@ -19,29 +20,44 @@ public class DeathMenu : MonoBehaviour
         if (player == null) player = FindFirstObjectByType<PlayerDeath>();
         if (levelRestart == null) levelRestart = FindFirstObjectByType<LevelRestart>();
 
-        panel.SetActive(false);
+        if (panel != null)
+            panel.SetActive(false);
     }
 
     public void Show(string reason, int score)
     {
-        reasonText.text = reason;
-        scoreText.text = "Twoj wynik: " + score;
-        panel.SetActive(true);
+        if (hudRoot != null)
+            hudRoot.SetActive(false);
+
+        if (reasonText != null)
+            reasonText.text = reason;
+
+        if (scoreText != null)
+            scoreText.text = "Zdobyte kryształy: " + score;
+
+        if (panel != null)
+            panel.SetActive(true);
     }
 
     public void Hide()
     {
-        panel.SetActive(false);
+        if (panel != null)
+            panel.SetActive(false);
+
+        if (hudRoot != null)
+            hudRoot.SetActive(true);
     }
 
     // Podpiete pod przyciski w panelu.
     public void RespawnAtCheckpoint()
     {
-        player.Revive();
+        if (player != null)
+            player.Revive();
     }
 
     public void RestartLevel()
     {
-        levelRestart.RestartLevel();
+        if (levelRestart != null)
+            levelRestart.RestartLevel();
     }
 }

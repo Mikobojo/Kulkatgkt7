@@ -1,16 +1,40 @@
 using UnityEngine;
 
+/// <summary>
+/// Plynne podazanie kamery za graczem z wyprzedzeniem i dolnym limitem wysokosci.
+/// </summary>
 public class FollowCamera : MonoBehaviour
 {
-    public GameObject target;   // Drag the ball here
+    public GameObject target;
 
-    void LateUpdate()
+    [SerializeField] private Vector2 offset = new Vector2(1.2f, 0.9f);
+    [SerializeField] private float smoothTime = 0.14f;
+    [SerializeField] private float minY = -1.5f;
+
+    private Vector3 velocity;
+
+    private void Start()
+    {
+        if (target == null) return;
+        Vector3 initial = GetTargetPosition();
+        transform.position = initial;
+    }
+
+    private void LateUpdate()
     {
         if (target == null) return;
 
-        // Make the camera's position equal to the ball's position, but keep its own Z
-        Vector3 newPos = target.transform.position;
-        newPos.z = transform.position.z;   // Preserve camera's original Z (usually -10)
-        transform.position = newPos;
+        Vector3 desired = GetTargetPosition();
+        transform.position = Vector3.SmoothDamp(transform.position, desired, ref velocity, smoothTime);
+    }
+
+    private Vector3 GetTargetPosition()
+    {
+        Vector3 pos = target.transform.position;
+        return new Vector3(
+            pos.x + offset.x,
+            Mathf.Max(minY, pos.y + offset.y),
+            transform.position.z
+        );
     }
 }

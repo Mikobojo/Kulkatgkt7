@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Smierc gracza: upadek w przepasc albo zabicie przez przeciwnika.
+/// Smierc gracza: upadek w przepasc albo zabicie przez przeciwnika lub kolce.
 /// Pokazuje menu smierci i pozwala odrodzic gracza w ostatnim checkpoincie.
 /// </summary>
 [RequireComponent(typeof(BallController))]
@@ -10,13 +10,16 @@ using UnityEngine;
 public class PlayerDeath : MonoBehaviour
 {
     [SerializeField] private float fallDeathY = -9f;
+    [SerializeField] private float respawnInvulnerabilityDuration = 0.6f;
     [SerializeField] private DeathMenu deathMenu;
 
     private BallController ball;
     private PlayerRespawn respawn;
     private Rigidbody2D body;
+    private float invulnerableUntil;
 
     public bool IsDead { get; private set; }
+    public bool IsInvulnerable => Time.time < invulnerableUntil;
 
     private void Awake()
     {
@@ -31,12 +34,12 @@ public class PlayerDeath : MonoBehaviour
     private void Update()
     {
         if (!IsDead && transform.position.y < fallDeathY)
-            Die("Spadles w przepasc!");
+            Die("Spadłeś w przepaść!");
     }
 
     public void Die(string reason)
     {
-        if (IsDead) return;
+        if (IsDead || IsInvulnerable) return;
         // Po wygranej (bramka wylacza ruch gracza) nie da sie juz umrzec.
         if (!ball.enabled) return;
 
@@ -55,6 +58,7 @@ public class PlayerDeath : MonoBehaviour
         if (!IsDead) return;
 
         IsDead = false;
+        invulnerableUntil = Time.time + respawnInvulnerabilityDuration;
         respawn.MoveToRespawnPoint();
         body.simulated = true;
         ball.enabled = true;

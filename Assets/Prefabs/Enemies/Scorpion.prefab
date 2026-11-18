@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 7, y: 7, z: 1}
+  m_LocalScale: {x: 4.5, y: 4.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -84,9 +84,9 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 6
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 5a76624441c3a964ea4548dea149928d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fbb7516acfb66364f9a8c8df6641077d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -157,7 +157,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.01}
+  m_Offset: {x: 0, y: -0.025}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -167,7 +167,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.15, y: 0.11}
+  m_Size: {x: 0.13, y: 0.09}
   m_EdgeRadius: 0
 --- !u!114 &1007033195761854953
 MonoBehaviour:
@@ -181,11 +181,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 247ba3d76fa2e164caba21840abc0689, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PatrolEnemy
-  moveSpeed: 1.5
-  patrolLeft: 3
-  patrolRight: 3
+  moveSpeed: 1.6
+  patrolLeft: 2.5
+  patrolRight: 2.5
   spriteFacesRight: 0
   spriteRenderer: {fileID: 4213650195518584472}
+  edgeCheckAhead: 0.45
+  wallCheckDistance: 0.25
 --- !u!114 &4369027811121619138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,7 +200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a260c554ba7c0ee4ab28596eb6c16704, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StompableEnemy
-  bounceVelocity: 8
+  bounceVelocity: 8.2
   pointsReward: 0
   deathAnimationTime: 0.25
 --- !u!114 &2852999596049491774
@@ -214,14 +216,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpriteFrameAnimator
   frames:
-  - {fileID: 21300000, guid: 5a76624441c3a964ea4548dea149928d, type: 3}
-  - {fileID: 21300000, guid: c07b6260347136e46a76308ba2223575, type: 3}
-  - {fileID: 21300000, guid: ad1e48050ad4cd0429cc40f1aac86a84, type: 3}
-  - {fileID: 21300000, guid: 56d1f03422e18e74a950b262d5910ad7, type: 3}
-  - {fileID: 21300000, guid: d76d2b31c837d464caf199a84432c4b9, type: 3}
-  - {fileID: 21300000, guid: 0686fde57012f3d4a93dc8dc4589b83b, type: 3}
-  - {fileID: 21300000, guid: 1329df941409ba84d97a360f693c5921, type: 3}
-  - {fileID: 21300000, guid: 64e6aabd4fc50fd4c8297cb3892fd533, type: 3}
-  - {fileID: 21300000, guid: b85cdac63001ea341951b4025653ac18, type: 3}
-  - {fileID: 21300000, guid: 7335178177ab8344f9de990298df1572, type: 3}
-  framesPerSecond: 8
+  - {fileID: 21300000, guid: fbb7516acfb66364f9a8c8df6641077d, type: 3}
+  - {fileID: 21300000, guid: 234e6fc345fc0d342b193d596f45d470, type: 3}
+  - {fileID: 21300000, guid: 761034e73e8132843bdd998b8c5075d5, type: 3}
+  - {fileID: 21300000, guid: 6e4d7da2e15721c4ca103a1f0806186b, type: 3}
+  - {fileID: 21300000, guid: 31657263eb958b341b96362e27118cfb, type: 3}
+  - {fileID: 21300000, guid: 5fb37c8059601b14cba79ab17dd2c044, type: 3}
+  - {fileID: 21300000, guid: fc6642e049c200944bb67da245eca17f, type: 3}
+  - {fileID: 21300000, guid: f7f6c7e51b916e743af8080737e40f87, type: 3}
+  - {fileID: 21300000, guid: 28a27229247a9dc49a2769d890c5abba, type: 3}
+  - {fileID: 21300000, guid: 9f8e1dc224457a248b284e11d5620985, type: 3}
+  framesPerSecond: 9

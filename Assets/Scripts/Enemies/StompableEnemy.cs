@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// Przeciwnik, ktorego mozna zabic skaczac na niego z gory.
-/// Dotkniecie z boku zabija gracza.
+/// Dotkniecie z boku zabija gracza (chyba ze gracz jest chwilowo niesmiertelny po odrodzeniu).
 /// </summary>
 [RequireComponent(typeof(Collider2D))]
 public class StompableEnemy : MonoBehaviour
@@ -31,9 +31,13 @@ public class StompableEnemy : MonoBehaviour
         if (playerDeath != null && playerDeath.IsDead) return;
 
         if (HitFromAbove(collision))
+        {
             Stomp(player);
-        else if (playerDeath != null)
-            playerDeath.Die("Zabil Cie przeciwnik!");
+        }
+        else if (playerDeath != null && !playerDeath.IsInvulnerable)
+        {
+            playerDeath.Die("Pokonał Cię przeciwnik!");
+        }
     }
 
     // Skok na przeciwnika = jakikolwiek punkt styku w gornej polowie jego collidera.

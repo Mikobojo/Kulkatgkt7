@@ -1,45 +1,62 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Sterowanie kulka gracza: ruch w poziomie, niezawodny skok (coyote time + bufor) oraz zliczanie punktow.
+/// </summary>
 public class BallController : MonoBehaviour
 {
     [Header("Movement")]
-    public float moveSpeed = 15f;
-    public float maxSpeed = 15f;
+    public float moveSpeed = 5.5f;
+    public float maxSpeed = 6.5f;
 
     [Header("Jump")]
-    public float jumpForce = 10f;
+    public float jumpForce = 7.8f;
     public LayerMask groundLayer;
-    public float groundCheckDistance = 0.2f;  // Small ray length from bottom of ball
+    public float groundCheckDistance = 0.18f;
+    [SerializeField] private float coyoteTime = 0.12f;
+    [SerializeField] private float jumpBufferTime = 0.12f;
 
     [Header("Score")]
     [SerializeField] private int points;
 
     private Rigidbody2D rb;
+    private CircleCollider2D circleCollider;
     private float moveInput;
+    private float coyoteCounter;
+    private float jumpBufferCounter;
 
-    void Start()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        circleCollider = GetComponent<CircleCollider2D>();
     }
 
-    void Update()
+    private void Update()
     {
-        // Horizontal input
         moveInput = Input.GetAxisRaw("Horizontal");
 
-        // Jump only if grounded (and no queuing)
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W)) && IsGrounded())
+        if (IsGrounded())
+            coyoteCounter = coyoteTime;
+        else
+            coyoteCounter -= Time.deltaTime;
+
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            jumpBufferCounter = jumpBufferTime;
+        else
+            jumpBufferCounter -= Time.deltaTime;
+
+        if (jumpBufferCounter > 0f && coyoteCounter > 0f)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            jumpBufferCounter = 0f;
+            coyoteCounter = 0f;
         }
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        // Movement (works mid-air too, but jump is disabled)
         rb.AddForce(new Vector2(moveInput * moveSpeed, 0f), ForceMode2D.Force);
 
-        // Limit horizontal speed
         if (Mathf.Abs(rb.linearVelocity.x) > maxSpeed)
         {
             rb.linearVelocity = new Vector2(Mathf.Sign(rb.linearVelocity.x) * maxSpeed, rb.linearVelocity.y);
@@ -48,21 +65,30 @@ public class BallController : MonoBehaviour
 
     private bool IsGrounded()
     {
-        // Cast a ray from the BOTTOM of the ball downward.
-        // The ball's radius is 0.5, so bottom is at y - 0.5.
-        Vector2 rayOrigin = transform.position + Vector3.down * 0.5f;
-        RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.down, groundCheckDistance, groundLayer);
+        if (circleCollider == null)
+            return false;
 
-        // Visualize the ray (red in Scene view)
-        Debug.DrawRay(rayOrigin, Vector2.down * groundCheckDistance, Color.red);
+        Bounds b = circleCollider.bounds;
+        float castRadius = b.extents.x * 0.85f;
+        float castDistance = (b.extents.y - castRadius) + groundCheckDistance;
 
-        return hit.collider != null;
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(b.center, castRadius, Vector2.down, castDistance, groundLayer);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            RaycastHit2D hit = hits[i];
+            if (hit.collider == null || hit.collider == circleCollider || hit.collider.isTrigger)
+                continue;
+
+            if (hit.normal.y > 0.35f)
+                return true;
+        }
+
+        return false;
     }
 
     public void AddPoints(int amount)
     {
         points += amount;
-        Debug.Log("Punkty: " + points);
     }
 
     public int GetPoints()
@@ -72,9 +98,12 @@ public class BallController : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        // Draw a small sphere at the ray origin for debugging
+        CircleCollider2D col = circleCollider != null ? circleCollider : GetComponent<CircleCollider2D>();
+        if (col == null) return;
+
         Gizmos.color = Color.yellow;
-        Vector3 rayOrigin = transform.position + Vector3.down * 0.5f;
-        Gizmos.DrawWireSphere(rayOrigin, 0.05f);
+        Vector3 bottom = new Vector3(col.bounds.center.x, col.bounds.min.y, 0f);
+        Gizmos.DrawWireSphere(bottom, 0.06f);
+        Gizmos.DrawLine(bottom, bottom + Vector3.down * groundCheckDistance);
     }
 }
