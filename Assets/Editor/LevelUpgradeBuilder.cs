@@ -949,23 +949,37 @@ public static class LevelUpgradeBuilder
 
         // --- 2. WIN PANEL ---
         GameObject winPanel = MakeFullscreenOverlay("WinPanel", canvas.transform, new Color(0.03f, 0.06f, 0.10f, 0.88f));
-        GameObject winCard = MakeCenteredCard("Card", winPanel.transform, new Vector2(780f, 440f),
+        GameObject winCard = MakeCenteredCard("Card", winPanel.transform, new Vector2(780f, 500f),
             new Color(0.10f, 0.16f, 0.25f, 0.98f), uiSprite);
 
         TMP_Text winTitle = MakeText("Wintitle", winCard.transform, "POZIOM UKOŃCZONY!", 64f,
             new Color(0.32f, 0.95f, 0.56f, 1f), TextAlignmentOptions.Center, FontStyles.Bold);
-        SetCenteredRect(winTitle.rectTransform, new Vector2(0f, 105f), new Vector2(700f, 100f));
+        SetCenteredRect(winTitle.rectTransform, new Vector2(0f, 145f), new Vector2(700f, 100f));
 
         TMP_Text winSub = MakeText("WinSubtitle", winCard.transform, "Ołtarz runiczny został aktywowany!", 30f,
             new Color(0.92f, 0.96f, 1f, 1f), TextAlignmentOptions.Center, FontStyles.Normal);
-        SetCenteredRect(winSub.rectTransform, new Vector2(0f, 15f), new Vector2(680f, 60f));
+        SetCenteredRect(winSub.rectTransform, new Vector2(0f, 60f), new Vector2(680f, 60f));
+
+        Button nextLevelBtn = MakeButton("NextLevelButton", winCard.transform, "Następny poziom",
+            new Vector2(0f, -45f), new Vector2(420f, 80f), new Color(0.18f, 0.72f, 0.42f, 1f), uiSprite);
 
         Button winRestartBtn = MakeButton("Restartbutton", winCard.transform, "Zagraj ponownie",
-            new Vector2(0f, -105f), new Vector2(400f, 84f), new Color(0.18f, 0.72f, 0.42f, 1f), uiSprite);
+            new Vector2(0f, -145f), new Vector2(420f, 80f), new Color(0.24f, 0.34f, 0.52f, 1f), uiSprite);
 
         LevelRestart levelRestart = Object.FindFirstObjectByType<LevelRestart>();
         if (levelRestart != null)
+        {
+            LevelTransition levelTransition = levelRestart.GetComponent<LevelTransition>();
+            if (levelTransition == null)
+                levelTransition = levelRestart.gameObject.AddComponent<LevelTransition>();
+
+            SerializedObject ltSo = new SerializedObject(levelTransition);
+            ltSo.FindProperty("nextSceneName").stringValue = "Level2";
+            ltSo.ApplyModifiedPropertiesWithoutUndo();
+
+            UnityEventTools.AddVoidPersistentListener(nextLevelBtn.onClick, new UnityAction(levelTransition.LoadNextLevel));
             UnityEventTools.AddVoidPersistentListener(winRestartBtn.onClick, new UnityAction(levelRestart.RestartLevel));
+        }
 
         winPanel.SetActive(false);
 
@@ -1032,6 +1046,8 @@ public static class LevelUpgradeBuilder
         }
 
         deathPanel.SetActive(false);
+
+        LevelMenuBuilder.AttachInGameLevelMenuToCurrentScene("SampleScene");
     }
 
     private static GameObject MakePanel(string name, Transform parent, Color color, Sprite sprite)
